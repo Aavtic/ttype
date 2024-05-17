@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 use crossterm::{QueueableCommand, cursor, queue};
 use crossterm::terminal::{self, ClearType};
-use crossterm::event::{Event, poll, read, KeyCode, KeyModifiers};
+use crossterm::event::{Event, poll, read, KeyCode, KeyModifiers, KeyEventKind};
 use crossterm::style::{Print, Colors, Color, SetColors, Stylize};
 use std::thread;
 use std::time::Duration;
@@ -147,20 +147,25 @@ fn main()  -> std::io::Result<()>{
                             if c == 'c' && event.modifiers.contains(KeyModifiers::CONTROL) {
                                 running = false;
                             }else  {
-                                if ix < mutated_text.len() {
-                                    mutated_text.remove(ix);
-                                    mutated_text.insert(ix, c);
-                                    ix += 1;
+                                if event.kind == KeyEventKind::Press {
+                                    if ix < mutated_text.len() {
+                                        mutated_text.remove(ix);
+                                        mutated_text.insert(ix, c);
+                                        ix += 1;
+                                    }
+
                                 }
                             }
                         },
                         KeyCode::Backspace => {
-                            if !(ix == 0) { 
-                                let last_char = texts.chars().nth(ix - 1).unwrap();
-                                let _ = mutated_text.remove(ix - 1);
-                                mutated_text.insert(ix - 1, last_char);
-                                ix -= 1;
-                                state_change = true;
+                            if event.kind == KeyEventKind::Press {
+                                if !(ix == 0) { 
+                                    let last_char = texts.chars().nth(ix - 1).unwrap();
+                                    let _ = mutated_text.remove(ix - 1);
+                                    mutated_text.insert(ix - 1, last_char);
+                                    ix -= 1;
+                                    state_change = true;
+                                }
                             }
                         },
                         _ => {},
