@@ -56,13 +56,6 @@ fn render_box(w: u16, h: u16, text: &mut String, curr_x: &mut u16, curr_y: &mut 
     let (tlc, tlr) = (((h as f32 - height as f32)/2f32) as u16, (((w as f32 - width as f32))/2f32) as u16);
     let mut current_line  = tlc + 1;
 
-    if (ix as u16) > (width - 3) {
-        *curr_x = (tlr + 1) + (ix as u16 % (width - 3));
-        *curr_y = tlc + 1 + (ix as u16 / (width - 3));
-    } else {
-        *curr_x = (tlr + 1) + ix as u16;
-        *curr_y = tlc + 1;
-    }
 
     match changes {
         Changes::Resize => {
@@ -130,11 +123,20 @@ fn render_box(w: u16, h: u16, text: &mut String, curr_x: &mut u16, curr_y: &mut 
             *curr_x += 1;
         }
         Changes::Backspace((old, _new)) => {
-            stdout.queue(cursor::MoveTo(*curr_x , *curr_y)).unwrap();
+            stdout.queue(cursor::MoveTo(*curr_x - 1, *curr_y)).unwrap();
             queue!(stdout, Print(old.with(Color::Grey))).unwrap();
         }
         _ => {return},
     }
+
+    if (ix as u16) > (width - 3) {
+        *curr_x = (tlr + 1) + (ix as u16 % (width - 2));
+        *curr_y = tlc + 1 + (ix as u16 / (width - 2));
+    } else {
+        *curr_x = (tlr + 1) + ix as u16;
+        *curr_y = tlc + 1;
+    }
+
     stdout.queue(cursor::MoveTo(*curr_x, *curr_y)).unwrap();
     stdout.flush().unwrap();
 }
