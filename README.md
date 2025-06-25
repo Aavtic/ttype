@@ -1,4 +1,4 @@
-# ⌨️ ttype
+# ⌨️ ttype - Terminal Type
 
 **ttype** is a simple and lightweight terminal-based typing practice program written in Rust.  
 It helps you improve your typing speed and accuracy right from your terminal — no GUI, no distractions.
